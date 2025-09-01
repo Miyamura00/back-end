@@ -1,32 +1,19 @@
-import express from 'express'
-import bcrypt from 'bcryptjs'
-import { createUser } from '../models/userModel.js'
+// routes/userRoutes.js - User API Routes
+const express = require('express');
+const { registerUser, loginUser, getAllUsers, getUserById } = require('../controllers/userController');
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {  
+// POST /api/users/register - Register new user
+router.post('/register', registerUser);
 
-    try{
-        const {name, email, password, designation} = req.body;
+// POST /api/users/login - Login user
+router.post('/login', loginUser);
 
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+// GET /api/users - Get all users
+router.get('/', getAllUsers);
 
-        const user = {
-            id: Date.now().toString(),
-            name,
-            email,
-            password: hashedPassword,
-            designation,
-            createdAt: new Date().toISOString()
-        }
+// GET /api/users/:id - Get user by ID
+router.get('/:id', getUserById);
 
-        await createUser(user);
-
-      res.json({message: 'User registered successfully'});
-    } catch (err) {
-        res.status(500).json({error: err.message});
-    }
-});
-
-export default router;
+module.exports = router;
